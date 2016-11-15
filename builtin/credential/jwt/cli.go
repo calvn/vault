@@ -1,4 +1,4 @@
-package auth0
+package jwt
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ type CLIHandler struct{}
 func (h *CLIHandler) Auth(c *api.Client, m map[string]string) (string, error) {
 	mount, ok := m["mount"]
 	if !ok {
-		mount = "auth0"
+		mount = "jwt"
 	}
 
 	idToken, ok := m["id_token"]
@@ -36,19 +36,18 @@ func (h *CLIHandler) Auth(c *api.Client, m map[string]string) (string, error) {
 
 func (h *CLIHandler) Help() string {
 	help := `
-The Auth0 credential provider allows you to authenticate with GitHub.
-To use it, specify the "token" parameter. The value should be a personal access
-token for your GitHub account. You can generate a personal access token on your
-account settings page on GitHub.
+The JWT credential provider allows you to authenticate with a signed JWT token.
+To use it, specify the "id_token" parameter. The value should be a signed JWT
+token. You can leverage JWT tokens with Auth0, or generate your own signed JWT token.
 
-    Example: vault auth -method=github token=<token>
+    Example: vault auth -method=jwt id_token=<id_token>
 
 Key/Value Pairs:
 
-    mount=auth0      The mountpoint for the Auth0 credential provider.
-                      Defaults to "auth0"
+    mount=jwt               The mountpoint for the JWT credential provider.
+                            Defaults to "jwt"
 
-    client_secret=<client_secret>     Client secret used to verify the JWT.
+    id_token=<id_token>     The signed JWT token, usually referred as id_token.
 	`
 
 	return strings.TrimSpace(help)

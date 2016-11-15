@@ -1,4 +1,4 @@
-package auth0
+package jwt
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ func pathConfig(b *backend) *framework.Path {
 		Fields: map[string]*framework.FieldSchema{
 			"client_secret": &framework.FieldSchema{
 				Type:        framework.TypeString,
-				Description: "The client secret for the Auth0 client",
+				Description: "The client secret that is used to validate the user's JWT",
 			},
 		},
 

@@ -1,4 +1,4 @@
-package auth0
+package jwt
 
 import (
 	"encoding/base64"
@@ -16,7 +16,7 @@ func pathLogin(b *backend) *framework.Path {
 		Fields: map[string]*framework.FieldSchema{
 			"id_token": &framework.FieldSchema{
 				Type:        framework.TypeString,
-				Description: "ID token from Auth0",
+				Description: "The signed JWT token, usually referred as id_token.",
 			},
 		},
 
@@ -92,12 +92,18 @@ func (b *backend) verifyCredentials(req *logical.Request, token string) (*verify
 		return nil, nil, err
 	}
 
-	// If token is not valid, return error
-	if !parsedToken.Valid {
-		return nil, nil, fmt.Errorf("token not valid match")
+	claims := parsedToken.Claims.(jwt.MapClaims)
+	if claims["sub"].(string) == "" {
+		return nil, nil, fmt.Errorf("token missing sub claim")
+	}
+	if claims["aud"].(string) == "" {
+		return nil, nil, fmt.Errorf("token missing aud claim")
 	}
 
-	claims := parsedToken.Claims.(jwt.MapClaims)
+	// If token is not valid, return error
+	if !parsedToken.Valid {
+		return nil, nil, fmt.Errorf("token is not valid")
+	}
 
 	policies, err := b.AudMap.Policies(req.Storage, claims["aud"].(string))
 	if err != nil {

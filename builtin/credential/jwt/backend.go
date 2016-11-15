@@ -1,4 +1,4 @@
-package auth0
+package jwt
 
 import (
 	"github.com/hashicorp/vault/logical"
@@ -47,8 +47,14 @@ type backend struct {
 }
 
 const backendHelp = `
-The auth0 credential provider allows authentication via JWT ID tokens.
+The JWT credential provider allows authentication via signed JWT tokens.
 
-Configuration of the server is done through the "config". Authentication is then done
-by suppying the two fields for "login".
+Users provide a signed JWT, which will be verified against the provided secret key.
+Even the though "sub" and "aud" JWT claims are optional fields, the JWT's passed
+on to this backend require these fields as a form of user and target identity.
+The "aud" is used to map the audience to Vault policies and the "sub" is used to
+identify the user since id_tokens can be refreshed for the same end-user.
+
+After enabling the credential provider, use the "config" route to
+configure it.
 `

@@ -9,10 +9,10 @@ import (
 
 	credAppId "github.com/hashicorp/vault/builtin/credential/app-id"
 	credAppRole "github.com/hashicorp/vault/builtin/credential/approle"
-	credAuth0 "github.com/hashicorp/vault/builtin/credential/auth0"
 	credAwsEc2 "github.com/hashicorp/vault/builtin/credential/aws-ec2"
 	credCert "github.com/hashicorp/vault/builtin/credential/cert"
 	credGitHub "github.com/hashicorp/vault/builtin/credential/github"
+	credJWT "github.com/hashicorp/vault/builtin/credential/jwt"
 	credLdap "github.com/hashicorp/vault/builtin/credential/ldap"
 	credUserpass "github.com/hashicorp/vault/builtin/credential/userpass"
 
@@ -73,7 +73,7 @@ func Commands(metaPtr *meta.Meta) map[string]cli.CommandFactory {
 					"github":   credGitHub.Factory,
 					"userpass": credUserpass.Factory,
 					"ldap":     credLdap.Factory,
-					"auth0":    credAuth0.Factory,
+					"jwt":      credJWT.Factory,
 				},
 				LogicalBackends: map[string]logical.Factory{
 					"aws":        aws.Factory,
@@ -113,7 +113,7 @@ func Commands(metaPtr *meta.Meta) map[string]cli.CommandFactory {
 					"userpass": &credUserpass.CLIHandler{},
 					"ldap":     &credLdap.CLIHandler{},
 					"cert":     &credCert.CLIHandler{},
-					"auth0":    &credAuth0.CLIHandler{},
+					"jwt":      &credJWT.CLIHandler{},
 				},
 			}, nil
 		},
