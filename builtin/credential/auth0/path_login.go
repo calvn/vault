@@ -1,6 +1,7 @@
 package auth0
 
 import (
+	"encoding/base64"
 	"fmt"
 
 	"github.com/dgrijalva/jwt-go"
@@ -31,8 +32,13 @@ func (b *backend) pathLogin(
 	idToken := data.Get("id_token").(string)
 
 	var verifyResp *verifyCredentialsResp
-
-	// TODO: verifyCredentials
+	if verifyResponse, resp, err := b.verifyCredentials(req, idToken); err != nil {
+		return nil, err
+	} else if resp != nil {
+		return resp, nil
+	} else {
+		verifyResp = verifyResponse
+	}
 
 	return &logical.Response{
 		Auth: &logical.Auth{
@@ -75,8 +81,12 @@ func (b *backend) verifyCredentials(req *logical.Request, token string) (*verify
 			"provide the client secret"), nil
 	}
 
-	parsedToken, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(config.ClientSecret), nil
+	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		decoded, err := base64.URLEncoding.DecodeString(config.ClientSecret)
+		if err != nil {
+			return nil, err
+		}
+		return decoded, nil
 	})
 	if err != nil {
 		return nil, nil, err
